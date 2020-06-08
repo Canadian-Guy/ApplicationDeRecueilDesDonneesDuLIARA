@@ -1,0 +1,72 @@
+body {
+    padding: 2%;
+    background: white;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 18px;
+}
+
+.container-fluid{
+    background : #eee;
+    margin : 1.5%;
+    padding : 1%;
+    border-radius: 6px;
+}
+
+label {
+    width: 90%;
+    margin-left: 10%;
+}
+
+h1,h2 {
+    text-align: center;
+}
+
+p {
+    text-align : center;
+    margin-top : 8%;
+}
+
+input[type=button] {
+    font-size: 18px;
+    background-color: lightgrey;
+    color: black;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+input:disabled{
+    background-color: dimgrey;
+    color: black;
+}
+
+h3{
+    display : inline-block;
+    margin-left : 2%;
+}
+
+.Act>input[type=button] {
+    margin-left : 10%;
+    margin-right : -10%;
+}
+
+.SubAct>input[type=button] {
+    margin-left : 10%;
+    margin-right : -10%;
+}
+
+.SubAct>p{
+    display : inline-block;
+    margin-left : 10%;
+}
+
+.Act{
+    margin-top : 5%;
+    margin-bottom : 5%;
+    border : inset black 2px;
+    border-radius : 5px;
+}
+
+.SubAct{
+    margin-top : -5%;
+}

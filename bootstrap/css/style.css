@@ -1,0 +1,139 @@
+body {
+	padding: 2%;
+	background: white;
+	font-size: 18px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.container-fluid{
+	background : #eee;
+	margin : 1.5%;
+	padding : 1%;
+	border-radius: 6px;
+}
+
+label{
+	margin-left : 2%;
+}
+
+h1{
+	text-align : center;
+}
+
+h2 {
+	text-align: center;
+	font-size: 18px;
+}
+
+p {
+	padding: 1%;
+	text-align : center;
+}
+
+.plusbas {
+	position: relative;
+	top: 18px;
+}
+
+#csv{
+	margin-left : 5%;
+}
+
+html {
+	background-image: url("background.JPG");
+}
+
+input[type=button] {
+	font-size: 18px;
+	background-color: lightgrey;
+	color: black;
+	border-radius: 8px;
+	display: block;
+	width: 40%;
+	margin-left: 30%;
+	margin-top: 10px;
+}
+
+input[type=button]:disabled {
+	background-color: dimgrey;
+	color: black;
+}
+
+input.delete {
+	font-size: 18px;
+	background-color: lightgrey;
+	color: black;
+	border-radius: 30px;
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	margin-left: 10px;
+}
+
+.btn {
+	position: relative;
+	top: 20px;
+}
+
+input.btn2 {
+	margin-top: 7%;
+}
+
+.datasource {
+	margin-bottom: 5%;
+}
+
+a {
+	text-decoration: none;
+}
+
+div.activite {
+	display: inline;
+}
+
+#nom {
+	display: inline;
+}
+
+.ssactivite{
+	margin-left : 10%;
+}
+
+@media screen and (max-width: 1340px) {
+	input[type=button] {
+		font-size: 18px;
+		color: black;
+		border-radius: 15px;
+		display: inline-block;
+		width: auto;
+		margin-top: 10px;
+		align-self: center;
+	}
+	body {
+		width: 80%;
+		margin-left: 8%;
+		margin-top: 7%;
+		margin-bottom: 3%;
+		background: white;
+	}
+	.datasource {
+		margin-bottom: 15%;
+	}
+
+	input.btn, input.btn2 {
+		width: 90%;
+		margin-left: 5%;
+	}
+	input.btn {
+		margin-top: 7%;
+	}
+	input.btn2 {
+		margin-top: 10%;
+	}
+	.accept {
+		margin: 0%;
+	}
+	label {
+		display: inline;
+	}
+}

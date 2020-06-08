@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width = device-width, initial-scale = 1">
+        <title>The Data Reception Zone</title>
+        <script type="text/javascript" src="lib/jquery.js"></script>
+        <script type="text/javascript" src="lib/jszip.js"></script>
+        <script type="text/javascript" src="lib/FileSaver.js"></script>
+        <script type="text/javascript" src="scripts/TestSaveFile.js"></script>
+        <script type="text/javascript" src="scripts/TestsLocalStorage.js"></script>
+        <script type="text/javascript" src="scripts/TestReceiveAndTag.js"></script>
+        <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
+        <link href="bootstrap/css/style.css" media="screen" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+    <div class="container">
+        <div class="jumbotron" style="padding: 20px">
+            <div class="row">
+                <h4 class="col-12 text-center">Exécution</h4>
+            </div>
+                <div id="Buttons" class="row">
+                <button id="Start" class="col-lg-3 col-6 text-center">Commencer</button>
+                <button id="NextSub" class="col-lg-3 col-6 text-center" disabled="disabled">Suivant</button>
+                <button id="Stop" class="col-lg-3 col-6 text-center" disabled="disabled">Arrêter</button>
+                <button id="DebugData" class="col-lg-3 col-6 text-center">Get Some Data</button>
+            </div>
+            <div id="Labels" class="row mt-3">
+                <div class="col-6 text-center">
+                    <label for="Activities">Activitiés: </label>
+                </div>
+                <div class="col-6 text-center">
+                    <label for="SubActivities">Sous-activitiés: </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 text-center">
+                    <select id="Activities" class="col-11 custom-select" size = 5>
+                        <!-- List of activities -->
+                    </select>
+                </div>
+                <div class="col-6 text-center">
+                    <select disabled id="SubActivities" class="col-11 custom-select" size = 5>
+                        <!-- List of sub activities -->
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div id="NavigationButtons" class="col-12 text-left">
+                    <button id="PreviousPage">Précédent</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </body>
+</html>
