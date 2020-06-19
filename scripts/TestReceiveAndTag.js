@@ -24,6 +24,8 @@ let commands = {"StartCommands":[], "NextCommands":[], "StopCommands":[], "Chang
 let recognition;
 
 ($(function(){
+    //TMP: Using this here for now because some changes require the storage to be updated. Old storage causes error.
+    UseDefaultCommands();
     //Bind functions to buttons.
     $("#Start").click(StartActivity);
     $("#NextSub").click(NextSubActivity);
