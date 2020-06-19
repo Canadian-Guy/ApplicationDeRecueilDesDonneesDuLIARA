@@ -37,3 +37,17 @@ function LoadActivities(){
 function EmptyActivities(){
     localStorage.removeItem("Activities");
 }
+
+//Takes an object, stringyfies it and sends it to local storage under "Commands".
+function StoreCommands(objectToStore){
+    localStorage.setItem("Commands", JSON.stringify(objectToStore));
+    console.log("Stored this stringyfied object: " + JSON.stringify(objectToStore));
+}
+
+function LoadCommands(){
+    return localStorage.getItem("Commands") ? JSON.parse(localStorage.getItem("Commands")) : {};
+}
+
+function EmptyCommands(){
+    localStorage.removeItem("Commands");
+}

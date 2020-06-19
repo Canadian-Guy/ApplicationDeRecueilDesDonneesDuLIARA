@@ -1,0 +1,45 @@
+{
+  "WebSockets": {
+    "WebSocketName1": "ws://192.168.0.159:3000",
+    "WebSocketName2": "ws://192.168.0.159:3001"
+  },
+  "Activities": {
+    "Activité 1": [
+      "1ere sous-activité",
+      "2e sous-activité"
+    ],
+    "Activité 2": [
+      "oh wow une autre sous-activité par défaut!"
+    ]
+  },
+  "Commands": {
+    "StartCommands": [
+      "commencer",
+      "démarrer",
+      "débuter",
+      "start",
+      "go"
+    ],
+    "NextCommands": [
+      "suivant",
+      "next",
+      "prochain",
+      "prochaine",
+      "skip"
+    ],
+    "StopCommands": [
+      "arrêt",
+      "arrêter",
+      "stop",
+      "annuler",
+      "cancel"
+    ],
+    "ChangeSubCommands": [
+      "sous-activité"
+    ],
+    "DeselectWords": [
+      "aucun",
+      "aucune"
+    ]
+  }
+}

@@ -1,10 +1,15 @@
 //Worker that handles receiving data from a data source and tagging it.
 
+/*  * When access to the lab is granted, this class will have to be adapted depending on how the
+    * lab's sockets work. (The way to get the data and the format of the data might be different.)
+    * Getting the data will require sending messages to the web sockets to receive different info
+    * on the sensors.
+*/
+
 let receivedData = [];  //Array for the data received from the webSocket.
 let selectedActivity;   //Current activity.
 let subActivities = [];  //Array for the subActivity objects (Name, Start and Stop in each object).
 let subActivityIndex = 0;   //Index of the current subActivity. Should start at 0 all the time.
-let activityTimeStamps = {"Start":0, "Stop":0}; //Timestamps to use in case of no sub activities.
 let webSocketInfo = {"Name":"", "URL":""};  //This worker's web socket info (name and url).
 let webSocket;  //This worker's web socket.
 
@@ -33,48 +38,34 @@ onmessage = function(event){
         case "Start":
             //data[1] should be a time stamp.
             //data[2] should be the activity (string).
-            //data[3] should be the subActivities objects (stringyfied)
+            //data[3] should be a sub activity name (might be "none", but that's ok.).
             selectedActivity = event.data[2];
-            //If the stringyfied subActivities we received is an empty array ("[]"), we have an activity with no sub activities.
-            if(event.data[3] === "[]"){
-                activityTimeStamps.Start = event.data[1];
-            }
-            else{
-                //If we received a array with stuff in it, parse it, put it in subActivities and set the first timeStamp.
-                subActivities = JSON.parse(event.data[3]);
-                subActivities[subActivityIndex].Start = event.data[1];
-            }
+            //Push the first sub activity in the array with its time stamp.
+            subActivities.push({"Name": event.data[3], "Start": event.data[1], "Stop": 0});
             break;
         case "GetData":
             //Ask the web socket to send us a piece of data with a good time stamp.
             webSocket.send("Give me data please.");
             break;
-        case "Next":
-            //data[1] should be a time stamp
-            //If we don't have sub activities, set activityTimeStamps.Stop.
-            if(subActivities.length === 0){
-                activityTimeStamps.Stop = event.data[1];
-                FinishActivity();
-                break;
-            }
-            //Set the timestamp of the currentSubActivity.Stop, go to the next activity and set the currentActivity.Start.
+        case "ChangeSub":   //*** Will probably end up replacing "next" ***
+            //data[1] should be a time stamp.
+            //data[2] should be a sub activity name. Can be "none", and it's ok.
+            //Set the stop timestamp of the current activity.
             subActivities[subActivityIndex].Stop = event.data[1];
-            if(subActivityIndex >= subActivities.length - 1){
-                FinishActivity();
-            }
-            else{
-                subActivityIndex++;
-                subActivities[subActivityIndex].Start = event.data[1];
-            }
+            subActivityIndex++;
+            //Push the new sub activity with its start timestamp.
+            subActivities.push({"Name": event.data[2], "Start": event.data[1], "Stop": 0});
+            break;
+        case "Next":
+            //data[1] should be a time stamp.
+            //data[2] should be the name of the sub activity (can be "none", but it's ok).
+            //Set the timestamp of the currentSubActivity.Stop, push the new sub activity and add its "Start" timestamp.
+            subActivities[subActivityIndex].Stop = event.data[1];
+            subActivityIndex++;
+            subActivities.push({"Name": event.data[2], "Start": event.data[1], "Stop": 0});
             break;
         case "Stop":
             //data[1] should be a time stamp.
-            //If we don't have sub activities, set activityTimeStamp.
-            if(subActivities.length === 0){
-                activityTimeStamps.Stop = event.data[1];
-                FinishActivity();
-                break;
-            }
             //Set the current sub activity's stop timestamp and move on to finish.
             subActivities[subActivityIndex].Stop = event.data[1];
             FinishActivity();
@@ -82,10 +73,9 @@ onmessage = function(event){
     }
 }
 
+//TODO: Make a script to check for miss clicks and use it here.
 function FinishActivity(){
     console.log("Finishing activity...");
-    let foundTag = false;
-    console.log("Sub activities info:");
 
     //We go over all the received data and give it an appropriate tag depending on it's timestamp.
     receivedData.forEach(function(item){
@@ -94,33 +84,24 @@ function FinishActivity(){
         if(isNaN(dataTime)){    //If it failed, it must be a timestamp in the form of milliseconds so we just parse it as an int.
             dataTime = parseInt(item["TimeStamp"]);
         }
-        //We check every sub activity to find one that matches the time stamp, if we have sub activities.
-        if(subActivities.length !== 0){
-            subActivities.forEach(function(sub){    //For each sub activity (sub) in subActivities.
-                if(dataTime > sub.Start && dataTime <= sub.Stop){
-                    console.log("Gave a sub activity to a tag!!!");
-                    item["Tag"] = selectedActivity + " - " + sub.Name; //Remainder, for now, "item" is JSON an array of objects.
-                    foundTag = true;
+        //We check every sub activity to find one that matches the time stamp.
+        subActivities.forEach(function(sub){    //For each sub activity (sub) in subActivities.
+            if(dataTime > sub.Start && dataTime <= sub.Stop){
+                console.log("Gave a sub activity to a tag.");
+                if(sub.Name === "none"){    //"none" is the sub activity when no sub activity is selected.
+                    item["Tag"] = selectedActivity + " - no sub activity";
                 }
-            });
-        }
-        else{   //If we don't have sub activities..
-            if(dataTime > activityTimeStamps.Start && dataTime <= activityTimeStamps.Stop){
-                item["Tag"] = selectedActivity + " - no sub activity";
-                foundTag = true;
+                else{
+                    item["Tag"] = selectedActivity + " - " + sub.Name;
+                }
             }
-        }
-        //TMP BECAUSE WE DON'T HAVE GOOD TIME STAMPS ON DATA --- If no sub activity tag matches, give a default.
-        if(!foundTag)
-            item["Tag"] = selectedActivity + " - " + "no sub activity";
-        else
-            foundTag = false;   //Set the flag back to false for the next iteration.
-    })
+        });
+    });
     //After tagging, we format the data. **** More formatting might be necessary later.
     FormatData();
 }
 
-//Stringyfie the whole thing. If we still receive arrays of data with real data, do a formatting step. Else, it should be good.
+//Stringify the whole thing. If we still receive arrays of data with real data, do a formatting step. Else, it should be good.
 function FormatData(){
     let fileName = webSocketInfo.Name + " - " + selectedActivity;
     let formattedData = JSON.stringify(receivedData)
@@ -133,7 +114,4 @@ function Reset(){
     receivedData = [];
     subActivities = [];
     subActivityIndex = 0;
-    activityTimeStamps = {"Start":0, "Stop":0};
-    //For now, we send a message to the web socket so that it sends us "new" data.
-    webSocket.send("Hello send me data pls.");
 }

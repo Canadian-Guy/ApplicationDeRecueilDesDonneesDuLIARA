@@ -1,6 +1,4 @@
-//Dummy class used to test the activity related stuff.
-
-//TODO: Make sure an activity is selected when page is loaded.
+//Class that handles the activities. They can be created/edited/deleted and saved here.
 
 let activities = {};
 let selectedActivity = null;
@@ -24,6 +22,12 @@ let selectedSubActivity = null;
     let subActivityDisplay = $("#SubActivities");
 
     activities = LoadActivities();
+    //If no activities were stored, use the default ones.
+    if(JSON.stringify(activities) === "{}"){
+        console.log("Using default activities.");
+        UseDefaultActivities();
+    }
+    console.log(activities);
     DisplayActivities();
 
     activityDisplay.change(function(){
@@ -36,6 +40,19 @@ let selectedSubActivity = null;
         selectedSubActivity = $("#SubActivities option:selected").val();
     });
 }));
+
+function UseDefaultActivities(){
+    $.get("DefaultValues.json", function(data){
+        //Data["Activities"] should contains activities like this --> {"Activity1": ["sub1",sub2"], ...}
+        activities = data["Activities"];
+    }, "json")
+        //When we're done getting the data, display it.
+        .done(function(data){
+            DisplayActivities();
+            //Store the default sub activities.
+            StoreActivities(activities);
+        })
+}
 
 //Delete all activities.
 function DeleteActivity(){
@@ -58,24 +75,24 @@ function DeleteActivity(){
 //Move the selected sub activity up in the option list.
 function MoveUp(){
     let selectedSubIndex = $("#SubActivities option:selected").index()
-    //If the sub activity is at the top, we cannot move it up.
-    if(selectedSubIndex === 0)
+    let subActivityDisplay = $("#SubActivities");
+    let options = subActivityDisplay.children();    //Get an array with each options.
+
+    //If the sub activity is at the top, we cannot move it up or there is no selected sub activity.
+    if(selectedSubIndex === 0 || selectedSubActivity === null)
         return;
 
-    let tmpDict = {};   //Temp object to save changes easily.
-    let subActivityDisplay = $("#SubActivities");
-
-    let options = subActivityDisplay.children();    //Get an array with each options.
     //Swap the selected option with the one above.
     [options[selectedSubIndex], options[selectedSubIndex-1]] = [options[selectedSubIndex-1], options[selectedSubIndex]];
 
-    //Put the value of each option in the temp object.
-    for (let index = 0; index < options.length; index++){
-        let tmpSub = options[index].value;
-        tmpDict[tmpSub] = tmpSub;
+    //tmp array to extract labels from the options.
+    let tmpSubs = [];
+    for(let index = 0; index < options.length; index++){
+        tmpSubs.push(options[index].label);
     }
+
     //Replace the saved sub activities with the swapped version.
-    activities[selectedActivity] = tmpDict;
+    activities[selectedActivity] = tmpSubs;
     DisplaySubActivities();
     StoreActivities(activities);
 }
@@ -86,22 +103,21 @@ function MoveDown(){
     let subActivityDisplay = $("#SubActivities");
     let options = subActivityDisplay.children();    //Get an array with each options.
 
-    //If the sub activity is at the bottom, we cannot move it down.
-    if(selectedSubIndex === options.length - 1)
+    //If the sub activity is at the bottom, we cannot move it dow or there is no selected sub activity.
+    if(selectedSubIndex === options.length - 1 || selectedSubActivity === null)
         return;
-
-    let tmpDict = {};   //Temp object to save changes easily.
 
     //Swap the selected option with the one under.
     [options[selectedSubIndex], options[selectedSubIndex+1]] = [options[selectedSubIndex+1], options[selectedSubIndex]];    //Javascript is beautiful.
 
-    //Put the value of each option in the temp object.
-    for (let index = 0; index < options.length; index++){
-        let tmpSub = options[index].value;
-        tmpDict[tmpSub] = tmpSub;
+    //tmp array to extract labels from the options.
+    let tmpSubs = [];
+    for(let index = 0; index < options.length; index++){
+        tmpSubs.push(options[index].label);
     }
+
     //Replace the saved sub activities with the swapped version.
-    activities[selectedActivity] = tmpDict;
+    activities[selectedActivity] = tmpSubs;
     DisplaySubActivities();
     StoreActivities(activities);
 }
@@ -112,7 +128,12 @@ function DeleteSubActivity(){
         alert("Veuillez sélectionner une sous-activité.");
         return;
     }
-    delete activities[selectedActivity][selectedSubActivity];   //Remove the selected sub activity from the object.
+    let index = activities[selectedActivity].indexOf(selectedSubActivity);
+    //Check if the activity exists, just to be sure.
+    if(index !== -1){
+        //Remove one element at the index of the sub activity that we want to delete.
+        activities[selectedActivity].splice(index,1);
+    }
     DisplaySubActivities(); //Update the display.
     StoreActivities(activities);    //We save the changes.
     selectedSubActivity = null; //The selected sub activity is gone, so we set it to null.
@@ -139,7 +160,7 @@ function AddSubActivity(){
         name = "Default sub activity name";
 
     //Add the sub activity to the object at activities[selectedActivity].
-    activities[selectedActivity][name] = name;
+    activities[selectedActivity].push(name);
     selectedSubActivity = name;
     DisplaySubActivities();
     StoreActivities(activities);
@@ -149,21 +170,24 @@ function AddSubActivity(){
 function DisplaySubActivities(){
     let display = $("#SubActivities");
     display.empty();
-    for(let subActivity in activities[selectedActivity]){
-        let dummyElement = document.createElement("option");
-        dummyElement.value = subActivity;  //Value is the activity.
-        dummyElement.title = subActivity;  //Title is the activity (Useful to see full name if too long).
-        dummyElement.text = subActivity;   //What we display is the activity.
-        //If the sub activity was selected, make sure it stays selected.
-        if(selectedSubActivity === subActivity)
-            dummyElement.selected = true;
-        display.append(dummyElement);
+    console.log("Displaying sub activities!")
+    //If the activity exists, display its sub activities.
+    if(activities[selectedActivity]){
+        activities[selectedActivity].forEach(function(subActivity){
+            let dummyElement = document.createElement("option");
+            dummyElement.value = subActivity;  //Value is the activity.
+            dummyElement.title = subActivity;  //Title is the activity (Useful to see full name if too long).
+            dummyElement.text = subActivity;   //What we display is the activity.
+            //If the sub activity was selected, make sure it stays selected.
+            if(selectedSubActivity === subActivity)
+                dummyElement.selected = true;
+            display.append(dummyElement);
+        });
     }
 }
 
 function AddNewActivity(){
     let activityName;
-
     activityName = prompt("Entrez un nom pour l'activité");
     //If the user pressed cancel, we return.
     if(activityName === null)
@@ -172,10 +196,12 @@ function AddNewActivity(){
     if(activityName === undefined || activityName === "")
         activityName = "Default activity name";
 
-    //Add an empty object to activities so we can add sub activities later.
-    activities[activityName] = {};
+    //Add an empty array to activities so we can add sub activities later.
+    activities[activityName] = [];
     selectedActivity = activityName;
     DisplayActivities();
+    //Empty the sub activity display because brand new activities don't have any sub activities.
+    $("#SubActivities").empty();
     StoreActivities(activities);
 }
 

@@ -23,6 +23,9 @@
                 <button id="Start" class="col-lg-3 col-6 text-center">Commencer</button>
                 <button id="NextSub" class="col-lg-3 col-6 text-center" disabled="disabled">Suivant</button>
                 <button id="Stop" class="col-lg-3 col-6 text-center" disabled="disabled">Arrêter</button>
+                <button id="StartVoice" class="col-lg-3 col-6 text-center">Démarrer mode vocal</button>
+                <button id="StopVoice" disabled="disabled" class="col-lg-3 col-6 text-center">Arrêter mode vocal</button>
+                <button id="DeselectSub" class="col-lg-3 col6 text-center">Pas de sous-activité</button>
                 <button id="DebugData" class="col-lg-3 col-6 text-center">Get Some Data</button>
             </div>
             <div id="Labels" class="row mt-3">
@@ -40,12 +43,55 @@
                     </select>
                 </div>
                 <div class="col-6 text-center">
-                    <select disabled id="SubActivities" class="col-11 custom-select" size = 5>
+                    <select id="SubActivities" class="col-11 custom-select" size = 5>
                         <!-- List of sub activities -->
                     </select>
                 </div>
             </div>
             <div class="row mt-3">
+                <b class="col-12 text-center">Liste des commandes vocales:</b>
+            </div>
+            <div class="row">
+                <p class="col-12">Pour sélectionner une sous-activité, dites <b>sous-activité</b> de son nom.<br>
+                Pour désélectionner une activité, dites <b>sous-activité aucune</b></p>
+            </div>
+            <div class="row">
+                <div class="text-center col-12">
+                    <button id="AddStartCommand" type="button" class="action-btn btn btn-primary btn-sm">Ajouter</button>
+                    <button id="DefaultStartCommands" type="button" class="action-btn btn btn-warning btn-sm">Reset</button>
+                    <button id="DeleteStartCommand" type="button" class="action-btn btn btn-danger btn-sm">Supprimer</button>
+                </div>
+            </div>
+            <div class="row">
+                <p class="col-12 mt-3">Commandes pour commencer: <span id="StartCommands">
+                    <!-- List of commands to be added in this span -->
+                </span></p>
+            </div>
+            <div class="row">
+                <div class="text-center col-12">
+                    <button id="AddNextCommand" type="button" class="action-btn btn btn-primary btn-sm">Ajouter</button>
+                    <button id="DefaultNextCommands" type="button" class="action-btn btn btn-warning btn-sm">Reset</button>
+                    <button id="DeleteNextCommand" type="button" class="action-btn btn btn-danger btn-sm">Supprimer</button>
+                </div>
+            </div>
+            <div class="row">
+                <p class="col-12 mt-3">Commandes pour changer de sous-activitié: <span id="NextCommands">
+                    <!-- List of commands to be added in this span -->
+                </span></p>
+            </div>
+            <div class="row">
+                <div class="text-center col-12">
+                    <button id="AddStopCommand" type="button" class="action-btn btn btn-primary btn-sm">Ajouter</button>
+                    <button id="DefaultStopCommands" type="button" class="action-btn btn btn-warning btn-sm">Reset</button>
+                    <button id="DeleteStopCommand" type="button" class="action-btn btn btn-danger btn-sm">Supprimer</button>
+                </div>
+            </div>
+            <div class="row">
+                <p class="col-12 mt-3">Commandes pour Arrêter: <span id="StopCommands">
+                    <!-- List of commands to be added in this span -->
+                </span></p>
+            </div>
+            <div class="row">
                 <div id="NavigationButtons" class="col-12 text-left">
                     <button id="PreviousPage">Précédent</button>
                 </div>

@@ -2,10 +2,13 @@
 
 let webSockets = {};
 
+//ws://172.24.24.3:6091 Lab's web socket???
+
 ($(function(){
     //Bind functions to buttons.
     $("#MakeWebSocket").click(AddNewWS);
     $("#DeleteButton").click(DeleteWebSockets);
+    $("#UseDefault").click(UseDefaultWebSockets);
     $("#NextPage").click(function(){
         window.location = "activity.html";
     });
@@ -21,9 +24,31 @@ let webSockets = {};
 
     //When we first load the page, we populate the webSockets object with the saved web sockets (if they exist).
     webSockets = LoadWebSockets();
+
+    //If there are no web sockets stored, use the default ones.
+    if(JSON.stringify(webSockets) === "{}"){
+        console.log("Using the default web sockets.");
+        UseDefaultWebSockets();
+    }
+
     //We display those web sockets.
     DisplayWebSockets(webSockets);
 }));
+
+function UseDefaultWebSockets(){
+    //Get the default web sockets.
+    $.get("DefaultValues.json", function(data){
+        //Data object should contains all the default web sockets like this --> {"name":"ws://ip:port",...}
+        webSockets = data["WebSockets"];
+    })
+        //Once we are done getting the data, save it and display it.
+        .done(function(){
+            //Save the default web sockets so they can be used later if they are kept.
+            StoreWebSockets(webSockets);
+            //Display, because the later display might be called before this is done. Calling it twice doesn't affect anything.
+            DisplayWebSockets(webSockets);
+        });
+}
 
 //Empty the local storage, reset the webSockets object and update the display.
 function DeleteWebSockets(){
@@ -65,8 +90,8 @@ function AddNewWS(){
         return;
     //If no name, default value.
     if(wsName === undefined || wsName === ""){
-        wsName = "Default WS name";
-        alert("Un nom par défaut a été choisi: Default WS name")
+        wsName = "Nom par défaut";
+        alert("Un nom par défaut a été choisi: Nom par défaut")
     }
     wsURI = prompt("Entrez un URL pour la source de données (ws://ip:port)", "ws://");
     //If the user pressed cancel, we return.
