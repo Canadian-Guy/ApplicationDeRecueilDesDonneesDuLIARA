@@ -10,6 +10,7 @@ ils doivent être des **wss**.
 
 #### **Notes pour les commandes vocales:**
 - Si une sous activité contient les mots "première, deuxième, ...", ceux-ci doivent être "1er, 2e, ...".
+- Les commandes vocales fonctionnent uniquement si l'application est sur un serveur.
 
 #### **Exemple pour "DefaultValues.json":**
 ```json
