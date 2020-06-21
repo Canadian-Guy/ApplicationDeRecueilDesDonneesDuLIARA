@@ -1,5 +1,6 @@
 //Class to handle the local storage.
 
+//Remove "WebSockets" from storage.
 function EmptyWebSocketStorage(){
     localStorage.removeItem("WebSockets");
 }
@@ -15,6 +16,7 @@ function StoreWebSockets(objectToStore){
     console.log("Stored this stringyfied object: " + JSON.stringify(objectToStore));
 }
 
+//Use this to see what is storage under "WebSockets"
 function LogWebSockets(){
     webSockets = JSON.parse(localStorage.getItem("WebSockets"));
     console.log("The stored web sockets are: ");
@@ -34,6 +36,7 @@ function LoadActivities(){
     return localStorage.getItem("Activities") ? JSON.parse(localStorage.getItem("Activities")) : {};
 }
 
+//Remove "Activities" from storage.
 function EmptyActivities(){
     localStorage.removeItem("Activities");
 }
@@ -44,10 +47,12 @@ function StoreCommands(objectToStore){
     console.log("Stored this stringyfied object: " + JSON.stringify(objectToStore));
 }
 
+//Returns the stored commands, or an empty object if there is nothing stores under "Commands".
 function LoadCommands(){
     return localStorage.getItem("Commands") ? JSON.parse(localStorage.getItem("Commands")) : {};
 }
 
+//Remove "Commands" from storage.
 function EmptyCommands(){
     localStorage.removeItem("Commands");
 }

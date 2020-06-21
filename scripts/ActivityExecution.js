@@ -1,4 +1,4 @@
-//Class that handles receiving and tagging the data via workers that connect to websocket and do most of the job.
+//Class that handles executing activities, with voice commands included, via Workers.
 
 let dataSources;    //For the stored web sockets.
 let workers = []    //Array to store the workers.

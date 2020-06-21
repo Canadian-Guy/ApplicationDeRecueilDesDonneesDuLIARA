@@ -1,4 +1,4 @@
-//Dummy class used to test the web socket stuff
+//Class to handle creating and deleting web sockets. Change is saved in local storage.
 
 let webSockets = {};
 

@@ -1,4 +1,4 @@
-//Class that handles the activities. They can be created/edited/deleted and saved here.
+//Class that handles the activities. They can be created/edited/deleted here. Change is saved in local storage.
 
 let activities = {};
 let selectedActivity = null;
