@@ -6,6 +6,8 @@
     * on the sensors.
 */
 
+importScripts("MissclickRemover.js")
+
 let receivedData = [];  //Array for the data received from the webSocket.
 let selectedActivity;   //Current activity.
 let subActivities = [];  //Array for the subActivity objects (Name, Start and Stop in each object).
@@ -73,9 +75,13 @@ onmessage = function(event){
     }
 }
 
-//TODO: Make a script to check for miss clicks and use it here.
+//TODO: Send a minimum time in milliseconds to RemoveMissClicks as a second param.
+//      Handle data that doesn't match any time stamp. (Careful for data received before/after activity, might have to disconnect WS).
 function FinishActivity(){
     console.log("Finishing activity...");
+    //Removing sub activities that have a very short time. (TMP --> For now, default value is 3sec.
+    subActivities = RemoveMissClicks(subActivities);
+    console.log(subActivities);
 
     //We go over all the received data and give it an appropriate tag depending on it's timestamp.
     receivedData.forEach(function(item){
