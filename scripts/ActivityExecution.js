@@ -9,6 +9,7 @@ let subActivities = []; //Array to store sub activities.
 let subActivityIndex = 0;   //Index of the current sub activity, always starts at 0.
 let finishedWorkers = 0;    //Used determine if we're ready to make the file or if we must wait for other messages.
 let usingDefaultWS = false;
+let minTime;
 
 //Arrays that will contain the various commands.
 let commandsStart = [];
@@ -437,46 +438,54 @@ function DisplayCommands(){
 
 //Create a worker per web socket. If the connection fails, the worker is terminated and removed. If all workers fail, go back to "index.html".
 function ConnectWebSockets(){
-    for(let webSocket in dataSources){
-        let worker = new Worker("scripts/WorkerJSON.js");
-        workers.push(worker);
-        //Tell the worker to connect to a data source.
-        worker.postMessage(["Connect", webSocket, dataSources[webSocket]]);
-        worker.onmessage = function(event){
-            //Switch on data[0] because the command should be there.
-            switch (event.data[0]) {
-                case "Error":
-                    //We output all the data.
-                    console.log("Error from worker: " + event.data);
-                    //If the websocket didn't connect, we need to kill the worker.
-                    let index = workers.indexOf(worker);    //Get the worker's index.
-                    if(index > -1){     //If we did find the worker, remove it.
-                        workers.splice(index, 1);   //Remove one item at the worker's index.
+    //Get the minimum time of an activity for error mitigation.
+    $.get("DefaultValues.json", function(data){
+        //Data["MinimumTime"] should contain a time in milliseconds (int).
+        minTime = data["MinimumTime"];
+    }, "json")
+        //When we're done, we can actually connect the web sockets.
+        .done(function(){
+            for(let webSocket in dataSources){
+                let worker = new Worker("scripts/WorkerJSON.js");
+                workers.push(worker);
+                //Tell the worker to connect to a data source.
+                worker.postMessage(["Connect", webSocket, dataSources[webSocket], minTime]);
+                worker.onmessage = function(event){
+                    //Switch on data[0] because the command should be there.
+                    switch (event.data[0]) {
+                        case "Error":
+                            //We output all the data.
+                            console.log("Error from worker: " + event.data);
+                            //If the websocket didn't connect, we need to kill the worker.
+                            let index = workers.indexOf(worker);    //Get the worker's index.
+                            if(index > -1){     //If we did find the worker, remove it.
+                                workers.splice(index, 1);   //Remove one item at the worker's index.
+                            }
+                            worker.terminate();
+                            console.log("Worker was terminated.");
+                            /*
+                            //If we don't have any workers left, everything failed. Go back to index.html. **** Probably tmp ****
+                            if(workers.length === 0){
+                                alert("La connection à échouée pour toutes les sources de données.");
+                                window.location = "index.html";
+                            }
+                            */
+                            break;
+                        case "Finished":
+                            //data[1] should be the file name.
+                            //data[2] should be the tagged and formatted data.
+                            AddFile(event.data[2], event.data[1]);
+                            finishedWorkers++;
+                            //If every worker is done, we can make a file.
+                            if(finishedWorkers === workers.length){
+                                MakeFile();
+                                Reset()
+                            }
+                            break;
                     }
-                    worker.terminate();
-                    console.log("Worker was terminated.");
-                    /*
-                    //If we don't have any workers left, everything failed. Go back to index.html. **** Probably tmp ****
-                    if(workers.length === 0){
-                        alert("La connection à échouée pour toutes les sources de données.");
-                        window.location = "index.html";
-                    }
-                    */
-                    break;
-                case "Finished":
-                    //data[1] should be the file name.
-                    //data[2] should be the tagged and formatted data.
-                    AddFile(event.data[2], event.data[1]);
-                    finishedWorkers++;
-                    //If every worker is done, we can make a file.
-                    if(finishedWorkers === workers.length){
-                        MakeFile();
-                        Reset()
-                    }
-                    break;
+                }
             }
-        }
-    }
+        });
 }
 
 //Reset values to be ready for an other activity.

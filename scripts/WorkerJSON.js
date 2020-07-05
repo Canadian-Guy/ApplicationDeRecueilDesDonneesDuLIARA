@@ -14,6 +14,7 @@ let subActivities = [];  //Array for the subActivity objects (Name, Start and St
 let subActivityIndex = 0;   //Index of the current subActivity. Should start at 0 all the time.
 let webSocketInfo = {"Name":"", "URL":""};  //This worker's web socket info (name and url).
 let webSocket;  //This worker's web socket.
+let minTime;
 
 onmessage = function(event){
     //Switch on data[0], because data[0] is always the "command".
@@ -21,6 +22,7 @@ onmessage = function(event){
         case "Connect":
             webSocketInfo.Name = event.data[1];   //data[1] should be the web socket's name
             webSocketInfo.URL = event.data[2];    //data[2] should be the web socket's URL
+            minTime = event.data[3];    //data[3] should be the min time of an activity.
             webSocket = new WebSocket(webSocketInfo.URL);
             //If the connection fails, send an error message.
             webSocket.onerror = function(event){
@@ -75,16 +77,19 @@ onmessage = function(event){
     }
 }
 
-//TODO: Send a minimum time in milliseconds to RemoveMissClicks as a second param.
-//      Handle data that doesn't match any time stamp. (Careful for data received before/after activity, might have to disconnect WS).
+//TODO: Handle data that doesn't match any time stamp. (Remove data with no match?).
 function FinishActivity(){
+    //Array to store data that needs to be removed.
+    let removeData = [];
     console.log("Finishing activity...");
     //Removing sub activities that have a very short time. (TMP --> For now, default value is 3sec.
-    subActivities = RemoveMissClicks(subActivities);
+    subActivities = RemoveMissClicks(subActivities, minTime);
     console.log(subActivities);
 
     //We go over all the received data and give it an appropriate tag depending on it's timestamp.
     receivedData.forEach(function(item){
+        console.log(item);
+        let matchTimeStamps = false;
         let dataTime = Date.parse(item["TimeStamp"]);   //Try to parse the date.
         //Useful for local testing, could be deleted later.
         if(isNaN(dataTime)){    //If it failed, it must be a timestamp in the form of milliseconds so we just parse it as an int.
@@ -94,6 +99,7 @@ function FinishActivity(){
         subActivities.forEach(function(sub){    //For each sub activity (sub) in subActivities.
             if(dataTime > sub.Start && dataTime <= sub.Stop){
                 console.log("Gave a sub activity to a tag.");
+                matchTimeStamps = true;
                 if(sub.Name === "none"){    //"none" is the sub activity when no sub activity is selected.
                     item["Tag"] = selectedActivity + " - no sub activity";
                 }
@@ -102,6 +108,15 @@ function FinishActivity(){
                 }
             }
         });
+        if(!matchTimeStamps){
+            //If the data doesn't match any time stamp, "tag" it for removal.
+            removeData.push(item);
+        }
+    });
+    //Remove all the data that has been tagged for removal. This is not done above, because removing data in the loop caused problems.
+    removeData.forEach(function(data){
+        console.log("Removing data because it didn't match any time stamp.");
+        receivedData.splice(receivedData.indexOf(data), 1);
     });
     //After tagging, we format the data. **** More formatting might be necessary later.
     FormatData();
