@@ -77,7 +77,6 @@ onmessage = function(event){
     }
 }
 
-//TODO: Handle data that doesn't match any time stamp. (Remove data with no match?).
 function FinishActivity(){
     //Array to store data that needs to be removed.
     let removeData = [];
