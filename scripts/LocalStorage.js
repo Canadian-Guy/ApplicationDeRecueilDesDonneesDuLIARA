@@ -1,5 +1,16 @@
 //Class to handle the local storage.
 
+//Saves the state (bool to check if admin + token)
+function StoreState(state){
+    sessionStorage.setItem("State", state);
+}
+
+//Return the state.
+function GetState(){
+    //Return the state, or false if there is no state saved. (If login is bypassed, no admin and no token.).
+    return sessionStorage.getItem("State") ? JSON.parse(sessionStorage.getItem("State")) : {admin: false, token: ""};
+}
+
 //Remove "WebSockets" from storage.
 function EmptyWebSocketStorage(){
     localStorage.removeItem("WebSockets");

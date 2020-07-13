@@ -9,7 +9,9 @@
         <script type="text/javascript" src="lib/FileSaver.js"></script>
         <script type="text/javascript" src="scripts/SaveFile.js"></script>
         <script type="text/javascript" src="scripts/LocalStorage.js"></script>
+        <script type="text/javascript" src="scripts/LoginVerification.js"></script>
         <script type="text/javascript" src="scripts/ActivityExecution.js"></script>
+        <script type="text/javascript" src="scripts/ContentFilter.js"></script>
         <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
         <link href="bootstrap/css/style.css" media="screen" rel="stylesheet" type="text/css"/>
     </head>
@@ -58,7 +60,7 @@
             <div class="row">
                 <div class="text-center col-12">
                     <button id="AddStartCommand" type="button" class="action-btn btn btn-primary btn-sm">Ajouter</button>
-                    <button id="DefaultStartCommands" type="button" class="action-btn btn btn-warning btn-sm">Reset</button>
+                    <button id="DefaultStartCommands" type="button" class="action-btn btn btn-warning btn-sm admin">Reset</button>
                     <button id="DeleteStartCommand" type="button" class="action-btn btn btn-danger btn-sm">Supprimer</button>
                 </div>
             </div>
@@ -70,7 +72,7 @@
             <div class="row">
                 <div class="text-center col-12">
                     <button id="AddNextCommand" type="button" class="action-btn btn btn-primary btn-sm">Ajouter</button>
-                    <button id="DefaultNextCommands" type="button" class="action-btn btn btn-warning btn-sm">Reset</button>
+                    <button id="DefaultNextCommands" type="button" class="action-btn btn btn-warning btn-sm admin">Reset</button>
                     <button id="DeleteNextCommand" type="button" class="action-btn btn btn-danger btn-sm">Supprimer</button>
                 </div>
             </div>
@@ -82,7 +84,7 @@
             <div class="row">
                 <div class="text-center col-12">
                     <button id="AddStopCommand" type="button" class="action-btn btn btn-primary btn-sm">Ajouter</button>
-                    <button id="DefaultStopCommands" type="button" class="action-btn btn btn-warning btn-sm">Reset</button>
+                    <button id="DefaultStopCommands" type="button" class="action-btn btn btn-warning btn-sm admin">Reset</button>
                     <button id="DeleteStopCommand" type="button" class="action-btn btn btn-danger btn-sm">Supprimer</button>
                 </div>
             </div>
@@ -98,7 +100,5 @@
             </div>
         </div>
     </div>
-
-
     </body>
 </html>

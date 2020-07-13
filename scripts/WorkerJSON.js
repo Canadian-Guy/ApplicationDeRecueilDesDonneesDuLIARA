@@ -87,7 +87,6 @@ function FinishActivity(){
 
     //We go over all the received data and give it an appropriate tag depending on it's timestamp.
     receivedData.forEach(function(item){
-        console.log(item);
         let matchTimeStamps = false;
         let dataTime = Date.parse(item["TimeStamp"]);   //Try to parse the date.
         //Useful for local testing, could be deleted later.
@@ -124,6 +123,7 @@ function FinishActivity(){
 //Stringify the whole thing. If we still receive arrays of data with real data, do a formatting step. Else, it should be good.
 function FormatData(){
     let fileName = webSocketInfo.Name + " - " + selectedActivity;
+    //For now, we send a stringified array of objects.
     let formattedData = JSON.stringify(receivedData)
     postMessage(["Finished", fileName, formattedData]);
     Reset();

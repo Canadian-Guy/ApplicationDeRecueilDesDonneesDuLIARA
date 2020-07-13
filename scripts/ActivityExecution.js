@@ -6,6 +6,7 @@ let selectedActivity = null;    //Current activity.
 let currentSubActivity = "none"; //Current sub activity, for display purpose.
 let activities = {};    //Object with all the stored activities and all the sub activities.
 let subActivities = []; //Array to store sub activities.
+let formattedData = []; //Array to hold all the data once it is formatted before it is sent to the server.
 let subActivityIndex = 0;   //Index of the current sub activity, always starts at 0.
 let finishedWorkers = 0;    //Used determine if we're ready to make the file or if we must wait for other messages.
 let usingDefaultWS = false;
@@ -472,12 +473,18 @@ function ConnectWebSockets(){
                             */
                             break;
                         case "Finished":
+                            //TODO: PUSH FORMATTED DATA IN AN ARRAY
+                            //TODO: WHEN ALL WORKERS ARE DONE, SEND ALL DATA TO SERVER.
+                            //TODO: HANDLE FAILURE + SYNC
                             //data[1] should be the file name.
                             //data[2] should be the tagged and formatted data.
+                            formattedData.push(event.data[2]);
                             AddFile(event.data[2], event.data[1]);
                             finishedWorkers++;
                             //If every worker is done, we can make a file.
                             if(finishedWorkers === workers.length){
+                                console.log("All formatted data: ");
+                                console.log(formattedData);
                                 MakeFile();
                                 Reset()
                             }
@@ -494,6 +501,7 @@ function Reset(){
     currentSubActivity = "none";  //Current sub activity goes back to null.
     subActivityIndex = 0;   //Index goes back to 0 to be ready for the next activity.
     finishedWorkers = 0;
+    formattedData = [];
     //Reset the button (disabled/enabled).
     $("#Start").prop("disabled", false);
     $("#NextSub").prop("disabled", true);

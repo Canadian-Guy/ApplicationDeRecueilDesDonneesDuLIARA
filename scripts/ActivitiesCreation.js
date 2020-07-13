@@ -11,7 +11,8 @@ let selectedSubActivity = null;
     $("#CreateSubButton").click(AddSubActivity);
     $("#DeleteSubButton").click(DeleteSubActivity);
     $("#MoveUp").click(MoveUp);
-    $("#MoveDown").click(MoveDown)
+    $("#MoveDown").click(MoveDown);
+    $("#UseDefault").click(UseDefaultActivities);
     $("#PreviousPage").click(function(){
         window.location = "index.html";
     });

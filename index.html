@@ -3,14 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width = device-width, initial-scale = 1">
-        <title>The Test Zone</title>
+        <title>LIARA - Application de collecte de donnés</title>
         <script type="text/javascript" src="lib/jquery.js"></script>
         <script type="text/javascript" src="lib/jszip.js"></script>
         <script type="text/javascript" src="lib/FileSaver.js"></script>
         <script type="text/javascript" src="scripts/TestsCookies.js"></script>
         <script type="text/javascript" src="scripts/SaveFile.js"></script>
         <script type="text/javascript" src="scripts/LocalStorage.js"></script>
+        <script type="text/javascript" src="scripts/LoginVerification.js"></script>
         <script type="text/javascript" src="scripts/WebSocketsCreation.js"></script>
+        <script type="text/javascript" src="scripts/ContentFilter.js"></script>
         <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
         <link href="bootstrap/css/style.css" media="screen" rel="stylesheet" type="text/css"/>
     </head>
@@ -28,13 +30,13 @@
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-4 text-center">
+                    <div class="col-6 text-center">
                         <button id="MakeWebSocket">Ajouter une source de données</button>
                     </div>
-                    <div class="col-4 text-center">
+                    <div class="col-6 text-center admin">
                         <button id="UseDefault">Utiliser les sources par défaut</button>
                     </div>
-                    <div class="col-4 text-center">
+                    <div class="col-6 text-center">
                         <button id="DeleteButton">Supprimer les sources de données</button>
                     </div>
                 </div>
