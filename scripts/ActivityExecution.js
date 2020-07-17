@@ -473,18 +473,38 @@ function ConnectWebSockets(){
                             */
                             break;
                         case "Finished":
-                            //TODO: PUSH FORMATTED DATA IN AN ARRAY
-                            //TODO: WHEN ALL WORKERS ARE DONE, SEND ALL DATA TO SERVER.
                             //TODO: HANDLE FAILURE + SYNC
                             //data[1] should be the file name.
                             //data[2] should be the tagged and formatted data.
-                            formattedData.push(event.data[2]);
+                            //Push the received data into an array. forEach to avoid having an array of arrays.
+                            let tmpArray = JSON.parse(event.data[2]);
+                            tmpArray.forEach(function(item){
+                                formattedData.push(item);
+                            })
+                            //Make a file with the file name and the data. (For local storage).
                             AddFile(event.data[2], event.data[1]);
                             finishedWorkers++;
                             //If every worker is done, we can make a file.
                             if(finishedWorkers === workers.length){
-                                console.log("All formatted data: ");
-                                console.log(formattedData);
+                                //Send the data to the server
+                                let auth = GetState().token;
+                                $.ajax({
+                                    url: 'http://localhost:4041/save',    //TODO: Change url when server is hosted somewhere.
+                                    type: 'post',
+                                    data: {data: JSON.stringify(formattedData)},
+                                    headers: {
+                                        Authorization: auth
+                                    },
+                                    dataType: 'json',
+                                })
+                                    .success(function(){
+                                        console.log("Success");
+                                    })
+                                    .fail(function(jqXHR, data){
+                                        console.log("Failed to send data to server");
+                                        //TODO: Store in local storage to sync later.
+                                    });
+
                                 MakeFile();
                                 Reset()
                             }

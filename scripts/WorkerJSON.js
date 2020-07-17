@@ -122,7 +122,8 @@ function FinishActivity(){
 
 //Stringify the whole thing. If we still receive arrays of data with real data, do a formatting step. Else, it should be good.
 function FormatData(){
-    let fileName = webSocketInfo.Name + " - " + selectedActivity;
+    //File name is the name of the ws, the activity and a timestamp. It needs to be as unique as possible, because it'll be used in the database.
+    let fileName = webSocketInfo.Name + " - " + selectedActivity + " - " + Date.now();
     //For now, we send a stringified array of objects.
     let formattedData = JSON.stringify(receivedData)
     postMessage(["Finished", fileName, formattedData]);
