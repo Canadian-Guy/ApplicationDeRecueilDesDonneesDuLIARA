@@ -1,5 +1,34 @@
 //Class to handle the local storage.
 
+//Save local only data in local storage.
+function StoreDataToBeSynchronised(data){
+    //If we already have un-sync'd data
+    if(localStorage.getItem("Data")){
+        //Get the local data
+        let tmp = JSON.parse(localStorage.getItem("Data"));
+        //Append the new data to the old. Data should arrive as an array of objects, so tmp is an array and we push all the new objects into it.
+        data.forEach(function(item){
+            tmp.push(item);
+        });
+        //Save the change.
+        localStorage.setItem("Data", JSON.stringify(tmp));
+    }
+    else{
+        //If there was no local data, save the array under "Data".
+        localStorage.setItem("Data", JSON.stringify(data));
+    }
+}
+
+//Return the un-sync'd data for synchronisation. DeleteSynchronisedData should be called after if sync was a success.
+function GetDataToBeSynchronised(){
+    //Return the non parsed array (it needs to be a string to be send to the server) or false if no data was saved.
+    return localStorage.getItem("Data") ? localStorage.getItem("Data") : false;
+}
+
+function DeleteSynchronisedData(){
+    localStorage.removeItem("Data");
+}
+
 //Saves the state (bool to check if admin + token)
 function StoreState(state){
     sessionStorage.setItem("State", state);

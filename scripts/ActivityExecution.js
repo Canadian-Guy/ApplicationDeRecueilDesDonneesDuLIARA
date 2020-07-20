@@ -1,4 +1,4 @@
-//Class that handles executing activities, with voice commands included, via Workers.
+//Class that handles executing activities, with voice commands included, via Workers. Likely needs to be split into multiple classes ( too big )
 
 let dataSources;    //For the stored web sockets.
 let workers = []    //Array to store the workers.
@@ -36,6 +36,7 @@ let recognition;
     $("#StartVoice").click(StartVocalRecognition);
     $("#StopVoice").click(StopVocalRecognition);
     $("#DeselectSub").click(DeselectSubActivity);
+    $("#Synchronise").click(SynchroniseData);
     $("#PreviousPage").click(function(){
         window.location = "activity.html";
     });
@@ -480,7 +481,7 @@ function ConnectWebSockets(){
                             let tmpArray = JSON.parse(event.data[2]);
                             tmpArray.forEach(function(item){
                                 formattedData.push(item);
-                            })
+                            });
                             //Make a file with the file name and the data. (For local storage).
                             AddFile(event.data[2], event.data[1]);
                             finishedWorkers++;
@@ -499,20 +500,53 @@ function ConnectWebSockets(){
                                 })
                                     .success(function(){
                                         console.log("Success");
+                                        Reset()
                                     })
                                     .fail(function(jqXHR, data){
-                                        console.log("Failed to send data to server");
-                                        //TODO: Store in local storage to sync later.
+                                        console.log("Failed to send data to server, saving local version");
+                                        console.log(formattedData);
+                                        StoreDataToBeSynchronised(formattedData);
+                                        Reset()
                                     });
-
                                 MakeFile();
-                                Reset()
                             }
                             break;
                     }
                 }
             }
         });
+}
+
+//Synchronise local data with the server.
+function SynchroniseData(){
+    //Get the data saved in the local storage.
+    let data = GetDataToBeSynchronised();
+    //If there was no data, data will be false.
+    if(data){
+        console.log("Synchronising data: ");
+        console.log(data);
+        let auth = GetState().token;
+        $.ajax({
+            url: 'http://localhost:4041/save',    //TODO: Change url when server is hosted somewhere.
+            type: 'post',
+            data: {data: data},
+            headers: {
+                Authorization: auth
+            },
+            dataType: 'json',
+        })
+            .success(function(){
+                console.log("Data synchronised");
+                //If synchronisation worked, we can delete the local data.
+                DeleteSynchronisedData();
+            })
+            .fail(function(jqXHR, data){
+                console.log("Failed to synchronise data");
+            });
+    }
+    else{
+        console.log("No data to synchronise");
+    }
 }
 
 //Reset values to be ready for an other activity.

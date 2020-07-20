@@ -1,4 +1,4 @@
-// index.js
+// index.js -- Server that allows data storage and authentification.
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require("cors");
