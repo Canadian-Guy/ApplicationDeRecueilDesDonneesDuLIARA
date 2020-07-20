@@ -474,7 +474,6 @@ function ConnectWebSockets(){
                             */
                             break;
                         case "Finished":
-                            //TODO: HANDLE FAILURE + SYNC
                             //data[1] should be the file name.
                             //data[2] should be the tagged and formatted data.
                             //Push the received data into an array. forEach to avoid having an array of arrays.
@@ -487,7 +486,7 @@ function ConnectWebSockets(){
                             finishedWorkers++;
                             //If every worker is done, we can make a file.
                             if(finishedWorkers === workers.length){
-                                //Send the data to the server
+                                //Send the data to the server, will only work if logged on for now.
                                 let auth = GetState().token;
                                 $.ajax({
                                     url: 'http://localhost:4041/save',    //TODO: Change url when server is hosted somewhere.
@@ -517,14 +516,13 @@ function ConnectWebSockets(){
         });
 }
 
-//Synchronise local data with the server.
+//Synchronise local data with the server. Will only work if logged in, for now.
 function SynchroniseData(){
     //Get the data saved in the local storage.
     let data = GetDataToBeSynchronised();
     //If there was no data, data will be false.
     if(data){
-        console.log("Synchronising data: ");
-        console.log(data);
+        console.log("Synchronising data.");
         let auth = GetState().token;
         $.ajax({
             url: 'http://localhost:4041/save',    //TODO: Change url when server is hosted somewhere.
