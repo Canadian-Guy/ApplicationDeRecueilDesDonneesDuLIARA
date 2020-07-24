@@ -1,3 +1,10 @@
+###L'application est temporairement disponible au http://jason-morin.com/appLIARA/login.html 
+Les informations si dessous s'appliquent toujours pour faire des tests en local, mais la version en ligne devrait
+fonctionner en tout temps et sans avoir besoin d'installer quoi que ce soit.
+À noter que la partie commandes vocale ne fonctionne pas puisque le site n'est pas "https",
+il est possible de forcer google chrome à faire confiance au site pour tester (Sur mobile et sur pc),
+mais ce n'est pas recommandé.
+
 Pour démarrer le websocket fourni, faire "node index.js" à ../WebSocketServer. Pour l'utiliser en local,
 ajouter ws://127.0.0.1:3000 aux sources de données.
 
