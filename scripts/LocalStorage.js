@@ -34,6 +34,10 @@ function StoreState(state){
     sessionStorage.setItem("State", state);
 }
 
+function DeleteState(){
+    sessionStorage.removeItem("State");
+}
+
 //Return the state.
 function GetState(){
     //Return the state, or false if there is no state saved. (If login is bypassed, no admin and no token.).

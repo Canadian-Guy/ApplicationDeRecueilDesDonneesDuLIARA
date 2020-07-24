@@ -6,7 +6,7 @@ $(function(){
     form.on("submit", function(processForm){
         //Prevent the default behavior of the send request.
         processForm.preventDefault();
-        $.post("http://localhost:4041/login", form.serialize(), function(data){ //TODO: Change url when server is hosted somewhere.
+        $.post("http://jason-morin.com:4041/login", form.serialize(), function(data){ //TODO: Change url when server is hosted somewhere.
             //Put the received data into the state object (We should receive a bool and a string).
             state.admin = data.admin;
             state.token = "Bearer " + data.token;

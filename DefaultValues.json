@@ -1,7 +1,9 @@
 {
   "WebSockets": {
     "WebSocketName1": "ws://10.0.0.25:3000",
-    "WebSocketName2": "ws://10.0.0.25:3001"
+    "WebSocketName2": "ws://10.0.0.25:3001",
+    "Serveur Personnel 1":  "ws://jason-morin.com:3000/WebSocket",
+    "Serveur Personnel 2":  "ws://jason-morin.com:3001/WebSocket"
   },
   "Activities": {
     "Activité 1": [

@@ -489,7 +489,7 @@ function ConnectWebSockets(){
                                 //Send the data to the server, will only work if logged on for now.
                                 let auth = GetState().token;
                                 $.ajax({
-                                    url: 'http://localhost:4041/save',    //TODO: Change url when server is hosted somewhere.
+                                    url: 'http://jason-morin.com:4041/save',    //TODO: Change url when server is hosted somewhere.
                                     type: 'post',
                                     data: {data: JSON.stringify(formattedData)},
                                     headers: {
@@ -500,12 +500,14 @@ function ConnectWebSockets(){
                                     .success(function(){
                                         console.log("Success");
                                         Reset()
+                                        MakeAlert("alert-success", "Sauvegarde en ligne complete.");
                                     })
                                     .fail(function(jqXHR, data){
                                         console.log("Failed to send data to server, saving local version");
                                         console.log(formattedData);
                                         StoreDataToBeSynchronised(formattedData);
                                         Reset()
+                                        MakeAlert("alert-warning", "Sauvegarde en ligne échouée, les données ont été sauvegardées localement.");
                                     });
                                 MakeFile();
                             }
@@ -525,7 +527,7 @@ function SynchroniseData(){
         console.log("Synchronising data.");
         let auth = GetState().token;
         $.ajax({
-            url: 'http://localhost:4041/save',    //TODO: Change url when server is hosted somewhere.
+            url: 'http://jason-morin.com:4041/save',    //TODO: Change url when server is hosted somewhere.
             type: 'post',
             data: {data: data},
             headers: {
@@ -537,13 +539,16 @@ function SynchroniseData(){
                 console.log("Data synchronised");
                 //If synchronisation worked, we can delete the local data.
                 DeleteSynchronisedData();
+                MakeAlert("alert-success", "Les données ont été synchronisées.");
             })
             .fail(function(jqXHR, data){
                 console.log("Failed to synchronise data");
+                MakeAlert("alert-warning", "La synchronisation a échouée, réessayez plus tard.");
             });
     }
     else{
         console.log("No data to synchronise");
+        MakeAlert("alert-secondary", "Aucune donnée à synchroniser.")
     }
 }
 
