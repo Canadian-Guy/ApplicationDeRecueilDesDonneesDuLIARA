@@ -3,8 +3,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const JWT_VERY_SECRET_KEY = "liaraverysecretkey";
+
+const saltRounds = 10;
 
 const app = express();
 const port = process.env.PORT || 4041;
@@ -39,16 +42,29 @@ const Users = mongoose.model('Users', userSchema);
 Users.countDocuments(function(error, count){
     //Default users.
     if(!error && count === 0){
-        const dummy = new Users({userName: 'Dum', password: 'dumdum', admin: false});
-        dummy.save(function(error, dummy){
-            if(error) return console.error(error);
-            console.log("saved " + dummy);
+        let psw = "dumdum";
+        bcrypt.hash(psw, saltRounds, function(err, hash){
+            if(err){
+                console.log("Error hashing password");
+                return;
+            }
+            const dummy = new Users({userName: 'Dum', password: hash, admin: false});
+            dummy.save(function(error, dummy){
+                if(error) return console.error(error);
+                console.log("saved " + dummy);
+            });
         });
-
-        const admin = new Users({userName: 'Admin', password: 'MightyAdmin', admin: true});
-        admin.save(function(error, admin){
-            if(error) return console.error(error);
-            console.log("Saved " + admin);
+        psw = "MightyAdmin";
+        bcrypt.hash(psw, saltRounds, function(err, hash){
+            if(err){
+                console.log("Error hashing password");
+                return;
+            }
+            const admin = new Users({userName: 'Admin', password: hash, admin: true});
+            admin.save(function(error, admin){
+                if(error) return console.error(error);
+                console.log("Saved " + admin);
+            });
         });
     }
 })
@@ -180,40 +196,51 @@ app.post('/getProfile', (req, res) => {
 });
 
 // Login
-//TODO: Hash the password because plain text passwords is a big no no.
 app.post('/login', (req, res) => {
     console.log("Login");
+    //Get the info used to log in.
     const userName = req.body['userName'];
     const password = req.body['password'];
-    console.log(req.body);
+    //If one of them is empty, return an error.
     if(userName === "" || password === ""){
         res.status(400).json({message: "Empty fields"});
         return;
     }
-    Users.findOne({userName: userName, password: password}, function(error, user){
+    //Check if the userName is in the database.
+    Users.findOne({userName: userName}, function(error, user){
         if(error){
             res.status(500);    //Generic internal error with no more info.
         }
         else if(user === null){
             res.status(401).json({message:"Bad username or password."});
         }
+        //found username.
         else{
-            //Return a token
-            let payload = {
-                userName: userName,
-                password: password,
-                admin: user.admin
-            }
-            try{
-                let token = jwt.sign(payload, JWT_VERY_SECRET_KEY);
-                res.status(200).json({admin: user.admin, token: token});
-            }
-            catch(error){
-                res.status(500);
-                console.log(error);
-            }
+            bcrypt.compare(password, user.password, function(err, result){
+                if(err){
+                    res.status(500).json("");   //Send generic error, comparing password failed.
+                }else if(result){   //password === password.
+                    //Return a token
+                    let payload = {
+                        userName: userName,
+                        password: user.password,
+                        admin: user.admin
+                    }
+                    try{
+                        let token = jwt.sign(payload, JWT_VERY_SECRET_KEY);
+                        res.status(200).json({admin: user.admin, token: token});
+                    }
+                    catch(error){
+                        res.status(500);
+                        console.log(error);
+                    }
+                }
+                else{   //Bad password
+                    res.status(401).json({message:"Bad username or password."});
+                }
+            });
         }
-    })
+    });
 });
 
 app.listen(port, () => {

@@ -312,7 +312,7 @@ function StartVocalRecognition(){
     $("#StopVoice").prop("disabled", false);
     //Disable the action buttons (Add/delete commands) while we use the vocal recognition.
     $(".action-btn").prop("disabled", true);
-
+    let foundCommand = false;
     //Voice recognition stuff. From color changer example in the speech api documentation.
     window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     window.SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
@@ -336,6 +336,7 @@ function StartVocalRecognition(){
         for(let index = 0; index < commandsStart.length; index++){
             //We execute the function only if the button is not disabled.
             if(!$("#Start").prop("disabled") && transcript.includes(commandsStart[index])){
+                foundCommand = true;
                 StartActivity();
                 break;  //Break out of the loop to avoid calling the function more than once.
             }
@@ -345,6 +346,7 @@ function StartVocalRecognition(){
         for(let index = 0; index < commandsNext.length; index++){
             //We only do something is the button is enabled.
             if(!$("#NextSub").prop("disabled") && transcript.includes(commandsNext[index])){
+                foundCommand = true;
                 NextSubActivity();
                 break;  //Break out of the loop to avoid calling the function more than once.
             }
@@ -354,6 +356,7 @@ function StartVocalRecognition(){
         for(let index = 0; index < commandsStop.length; index++){
             //We only do something if the button is enabled
             if(!$("#Stop").prop("disabled") && transcript.includes(commandsStop[index])){
+                foundCommand = true;
                 StopActivity();
                 break;  //Break out of the loop to avoid calling the function more than once.
             }
@@ -366,12 +369,16 @@ function StartVocalRecognition(){
                 //Before checking for a sub activity, check for a deselect word.
                 for(let deselectIndex = 0; deselectIndex < deselectWords.length; deselectIndex ++){
                     if(transcript.includes(deselectWords[deselectIndex])){
+                        foundCommand = true;
                         DeselectSubActivity();
                     }
                 }
                 //If we did get the change sub command, check if the command contains the name of a sub activity.
                 for(let subIndex = 0; subIndex < subActivities.length; subIndex ++){
                     if(transcript.includes(subActivities[subIndex])){
+                        //Visual feedback flag.
+                        ChangeJumboColor("#00cc00", 500);
+                        foundCommand = true;
                         //Set the current sub activity.
                         currentSubActivity = subActivities[subIndex];
                         //Deselect the old sub activity.
@@ -394,6 +401,13 @@ function StartVocalRecognition(){
                 }
             }
         }
+        //If the command succeeded, blink green, else blink red.
+        if(foundCommand)
+            ChangeJumboColor("#00cc00", 500);
+        else
+            ChangeJumboColor("#cc0000", 500);
+        //Reset the flag for the next voice command.
+        foundCommand = false;
     }
     //When the recognition stops, start it again to get continuous recognition. Causes weird behavior on mobile, because
     //a sound is played whenever the recognition starts and ends, making it look like the app is broken.
