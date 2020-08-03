@@ -450,7 +450,7 @@ function DisplayCommands(){
     stopCommandsDisplay.text(commandsString);
 }
 
-//Create a worker per web socket. If the connection fails, the worker is terminated and removed. If all workers fail, go back to "index.html".
+//Create a worker per web socket. If the connection fails, the worker is terminated and removed. If all workers fail, go back to "webSockets.html".
 function ConnectWebSockets(){
     //Get the minimum time of an activity for error mitigation.
     $.get("DefaultValues.json", function(data){
@@ -478,10 +478,10 @@ function ConnectWebSockets(){
                             worker.terminate();
                             console.log("Worker was terminated.");
                             /*
-                            //If we don't have any workers left, everything failed. Go back to index.html. **** Probably tmp ****
+                            //If we don't have any workers left, everything failed. Go back to webSockets.html. **** Probably tmp ****
                             if(workers.length === 0){
                                 alert("La connection à échouée pour toutes les sources de données.");
-                                window.location = "index.html";
+                                window.location = "webSockets.html";
                             }
                             */
                             break;

@@ -70,7 +70,7 @@ Users.countDocuments(function(error, count){
 })
 /*
 //log all users.
-console.log("Finding all users before deletion.")
+console.log("Logging all users.")
 Users.find(function(error, users){
     if(error) return console.error(error);
     console.log(users);
@@ -89,7 +89,58 @@ app.get('/', (req, res) => {
     res.send('Hello There');
 });
 
-//TMP, FOR DEBUG ONLY, REMOVE/COMMENT THIS *****NOT SECURE AT ALL*****
+//Send all users, without their password, need to be an admin.
+app.get('/users', (req, res) => {
+    console.log("Log all users.");
+    let noPswUsers = [];
+
+    let auth = req.headers['authorization'];
+    if(!auth){
+        res.status(401).json({message: "Must be logged in. Please send authorization header with token."});
+    }
+    else{
+        let authType = auth.split(" ")[0];
+        let authToken = auth.split(" ")[1];
+        if(authType !== "Bearer"){
+            res.status(400).json({message: "Authorization header must be sent with token in it."});
+        }
+        else{
+            try{
+                // Decode the token. This will give us the user's information.
+                let decoded = jwt.decode(authToken, JWT_VERY_SECRET_KEY);
+                // Look up the user in the data base to see if he exists.
+                Users.findOne({userName: decoded.userName, password: decoded.password}, function(error, user){
+                    if(error){
+                        res.status(500);    //Generic internal error with no more info.
+                    }
+                    //If we didn't find the user, send an error.
+                    else if(user === null){
+                        res.status(401).json({message:"Bad token, must log in"});
+                    }
+                    //Only admin can register a new user (TMP?).
+                    else if(!user.admin){
+                        res.status(403).json({message: "Need admin permission to register a new user."});
+                    }
+                    //If we found the user, the token is good, send the stuff.
+                    else{
+                        Users.find(function(error, users){
+                            if(error) return console.error(error);
+                            users.forEach(function(user){
+                                noPswUsers.push({userName: user.userName, admin:user.admin});
+                            })
+                            res.status(200).json(noPswUsers);
+                        });
+                    }
+                });
+            }
+            catch(error){
+                res.status(500);    //Send generic error code, problem happened in decoding or in database.
+            }
+        }
+    }
+});
+
+//TMP, FOR DEBUG ONLY, REMOVE/COMMENT THIS *****NOT SECURE AT ALL, DELETES ALL SAVED DATA*****
 app.post('/deleteData', (req, res) => {
     console.log("Delete Data");
     Data.deleteMany({}, function(error){
@@ -117,7 +168,7 @@ app.post('/save', (req, res) => {
             try{
                 // Decode the token. This will give us the user's information.
                 let decoded = jwt.decode(authToken, JWT_VERY_SECRET_KEY);
-                // Look up the user in the data base to see if he exists.
+                // Look up the user in the data base to see if he exists. Note that we use decoded.password, because the token was made using the hashed password.
                 Users.findOne({userName: decoded.userName, password: decoded.password}, function(error, user){
                     if(error){
                         res.status(500);    //Generic internal error with no more info.
@@ -152,16 +203,22 @@ app.get('/getData', (req, res) => {
     Data.find(function(error, data){
         res.status(200).json(data)
     });
-})
+});
 
-// Get profile (Used to "authorise" user to load pages).
-app.post('/getProfile', (req, res) => {
-    console.log("Get Profile.")
-    //get the authorisation header( should be "Bearer longStringOfCharacter" ).
+//Register a new user in the database. This part is subject to change because idk who will be able to register people.
+app.post('/register', (req, res) => {
+    console.log("Register");
+    //Get received info.
+    const userName = req.body['userName'];
+    const password = req.body['password'];
+    //If one of the fields is empty, return an error.
+    if(!userName || !password || userName === "" || password === ""){
+        res.status(400).json({message: "Empty fields"});
+        return;
+    }
     let auth = req.headers['authorization'];
-    //If the header was not there, send an error.
     if(!auth){
-        res.status(401).json({message: "Must be logged in to access this part."});
+        res.status(401).json({message: "Must be logged in. Please send authorization header with token."});
     }
     else{
         let authType = auth.split(" ")[0];
@@ -180,11 +237,44 @@ app.post('/getProfile', (req, res) => {
                     }
                     //If we didn't find the user, send an error.
                     else if(user === null){
+                        console.log(user);
+                        console.log(decoded);
+                        console.log(authToken);
                         res.status(401).json({message:"Bad token, must log in"});
                     }
-                    //If we found the user, the token is good, send a success and a bool to confirm if the user is an admin.
+                    //Only admin can register a new user (TMP?).
+                    else if(!user.admin){
+                        res.status(403).json({message: "Need admin permission to register a new user."});
+                    }
+                    //If we found the user, the token is good, register the new user.
                     else{
-                        res.status(200).json(user.admin);    //Just send a success code, user was found with received token.
+                        //Check if the username is already in the database
+                        Users.findOne({userName:userName}, function(error, user){
+                            if(error){
+                                console.log(error);
+                                res.status(500).json("");    //Generic internal error with no more info.
+                                return;
+                            }
+                            if(user !== null){
+                                res.status(409).json({message:"Username already exists."});
+                            }else{
+                                //Hash the password
+                                bcrypt.hash(password, saltRounds, function(err, hash){
+                                    if(err){
+                                        console.log(err);
+                                        return;
+                                    }
+                                    //Create the new user with the hashed password
+                                    const newUser = new Users({userName: userName, password: hash, admin: false});
+                                    //Save the new user.
+                                    newUser.save(function(error, newUser){
+                                        if(error) return console.error(error);
+                                        console.log("saved " + newUser);
+                                    });
+                                });
+                                res.status(200).json("");   //Success.
+                            }
+                        });
                     }
                 });
             }
@@ -209,7 +299,7 @@ app.post('/login', (req, res) => {
     //Check if the userName is in the database.
     Users.findOne({userName: userName}, function(error, user){
         if(error){
-            res.status(500);    //Generic internal error with no more info.
+            res.status(500).json("");    //Generic internal error with no more info.
         }
         else if(user === null){
             res.status(401).json({message:"Bad username or password."});

@@ -17,6 +17,15 @@ function CheckIfLogged(){
     let buttonDiv = $("#LoginLogout");
     //Check if there's a token saved. If so, we're logged, else, we're not.
     if(GetState().token) {
+        //If admin, add the dashboard button.
+        if(GetState().admin){
+            let buttonDummy = document.createElement("button");
+            buttonDummy.textContent = "Dashboard";
+            buttonDummy.onclick = function(){
+                window.location = "dashboard.html";
+            }
+            $(".container").prepend(buttonDummy);
+        }
         //Create the button
         let buttonDummy = document.createElement("button");
         buttonDummy.textContent = "Se déconnecter";
@@ -25,7 +34,7 @@ function CheckIfLogged(){
             //Remove the state from the session storage.
             DeleteState();
             //Return to the login window.
-            window.location = "login.html"
+            window.location = "index.html"
         }
         buttonDiv.append(buttonDummy);
     }else{
@@ -35,7 +44,7 @@ function CheckIfLogged(){
         //Add the login function
         buttonDummy.onclick = function(){
             //Just go to the login window.
-            window.location = "login.html";
+            window.location = "index.html";
         }
         buttonDiv.append(buttonDummy);
     }

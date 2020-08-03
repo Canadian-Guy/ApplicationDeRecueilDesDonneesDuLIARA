@@ -14,7 +14,7 @@ let selectedSubActivity = null;
     $("#MoveDown").click(MoveDown);
     $("#UseDefault").click(UseDefaultActivities);
     $("#PreviousPage").click(function(){
-        window.location = "index.html";
+        window.location = "webSockets.html";
     });
     $("#NextPage").click(function(){
         window.location = "dataReception.html";
