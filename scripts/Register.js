@@ -12,7 +12,8 @@ $(function(){
         if(psw === pswConfirm){
             let auth = GetState().token;
             $.ajax({
-                url: 'http://localhost:4041/register',    //TODO: Change url when server is hosted somewhere.
+                url: 'http://jason-morin.com:4041/register',
+                //url: 'http://localhost:4041/register',    //TODO: Change url when server is hosted somewhere.
                 type: 'post',
                 data: form.serialize(),
                 headers: {
@@ -26,7 +27,7 @@ $(function(){
                     MakeAlert("alert-success", "Utilisateur créé.");
                 })
                 .fail(function(jqXHR, data){
-                    let errorMessage = JSON.parse(jqXHR.responseText);
+                    let errorMessage = jqXHR.responseText;
                     MakeAlert("alert-danger", errorMessage.message);
                     console.log(errorMessage.message);
                 });

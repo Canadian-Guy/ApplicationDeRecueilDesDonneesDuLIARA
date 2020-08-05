@@ -14,7 +14,7 @@ $(function(){
         NavigateTo("register.html")
     })
     $("#userManager").click(function(){
-        //NavigateTo("manageUsers.html")
+        NavigateTo("manageUsers.html")
     })
 });
 

@@ -14,20 +14,18 @@
 <body>
 <div class="container">
     <div class="jumbotron">
-        <div class="row border align-middle bg-light">
-            <div class="col-6 text-center">
-                This is the user's name
-            </div>
-            <div class="col-2">
-                <p>True</p>
-            </div>
-            <div class="col-2">
-                <button class="btn-primary">Change admin status</button>
-            </div>
-            <div class="col-2">
-                <button class="btn-danger">Delete</button>
-            </div>
-        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Utilisateur</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th> <!-- empty th for aesthetic reasons -->
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            <!-- users are loaded here -->
+            </tbody>
+        </table>
     </div>
 </div>
 
