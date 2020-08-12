@@ -285,6 +285,126 @@ app.post('/register', (req, res) => {
     }
 });
 
+// Edit user status
+app.post('/editUserStatus', (req, res) => {
+    console.log("Edit User Status");
+    //Get new status.
+    const userName = req.body['userName'];
+    const admin = req.body['admin'];
+
+    let auth = req.headers['authorization'];
+    if(!auth){
+        res.status(401).json({message: "Must be logged in. Please send authorization header with token."});
+    }
+    else{
+        let authType = auth.split(" ")[0];
+        let authToken = auth.split(" ")[1];
+        if(authType !== "Bearer"){
+            res.status(400).json({message: "Authorization header must be sent with token in it."});
+        }
+        else{
+            try{
+                // Decode the token. This will give us the user's information.
+                let decoded = jwt.decode(authToken, JWT_VERY_SECRET_KEY);
+                // Look up the user in the data base to see if he exists.
+                Users.findOne({userName: decoded.userName, password: decoded.password}, function(error, user){
+                    if(error){
+                        res.status(500);    //Generic internal error with no more info.
+                    }
+                    //If we didn't find the user, send an error.
+                    else if(user === null){
+                        res.status(401).json({message:"Bad token, must log in"});
+                    }
+                    if(user.userName === userName){
+                        res.status(403).json({message:"Cannot edit yourself."});
+                    }
+                    //Only admin can register a new user (TMP?).
+                    else if(!user.admin){
+                        res.status(403).json({message: "Need admin permission to register a new user."});
+                    }
+                    //If we found the user, the token is good, update him.
+                    else{
+                        Users.findOne({userName:userName}, function(error, user){
+                            if(error){
+                                res.status(500).json({message:"Error deleting user."})
+                            }
+                            user.admin = admin;
+                            user.save(function(error, user){
+                                if(error){
+                                    res.status(500).json({message:error});
+                                }
+                                res.status(200).json({message:"Edited user "+ userName});
+                            });
+                        });
+                    }
+                });
+            }
+            catch(error){
+                res.status(500);    //Send generic error code, problem happened in decoding or in database.
+            }
+        }
+    }
+});
+
+// Delete a user.
+app.post('/deleteUser', (req, res) => {
+    console.log("Delete User");
+    //Get the username to delete.
+    const userName = req.body['userName'];
+
+    if(userName === ""){
+        res.status(400).json({message: "Empty fields"});
+        return;
+    }
+
+    let auth = req.headers['authorization'];
+    if(!auth){
+        res.status(401).json({message: "Must be logged in. Please send authorization header with token."});
+    }
+    else{
+        let authType = auth.split(" ")[0];
+        let authToken = auth.split(" ")[1];
+        if(authType !== "Bearer"){
+            res.status(400).json({message: "Authorization header must be sent with token in it."});
+        }
+        else{
+            try{
+                // Decode the token. This will give us the user's information.
+                let decoded = jwt.decode(authToken, JWT_VERY_SECRET_KEY);
+                // Look up the user in the data base to see if he exists.
+                Users.findOne({userName: decoded.userName, password: decoded.password}, function(error, user){
+                    if(error){
+                        res.status(500);    //Generic internal error with no more info.
+                    }
+                    //If we didn't find the user, send an error.
+                    else if(user === null){
+                        console.log(user);
+                        console.log(decoded);
+                        console.log(authToken);
+                        res.status(401).json({message:"Bad token, must log in"});
+                    }
+                    //Only admin can register a new user (TMP?).
+                    else if(!user.admin){
+                        res.status(403).json({message: "Need admin permission to register a new user."});
+                    }
+                    //If we found the user, the token is good, delete the user..
+                    else{
+                        Users.deleteOne({userName:userName}, function(error){
+                            if(error){
+                                res.status(500).json({message:"Error deleting user."})
+                            }
+                            res.status(200).json({message:"Deleted user "+ userName});
+                        });
+                    }
+                });
+            }
+            catch(error){
+                res.status(500);    //Send generic error code, problem happened in decoding or in database.
+            }
+        }
+    }
+});
+
 // Login
 app.post('/login', (req, res) => {
     console.log("Login");
