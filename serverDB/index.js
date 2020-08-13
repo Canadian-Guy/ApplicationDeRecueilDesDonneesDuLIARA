@@ -68,6 +68,8 @@ Users.countDocuments(function(error, count){
         });
     }
 })
+
+//To reset users, uncomment this snippet, reset the server and comment the snippet again (To avoid resetting next server restart)
 /*
 //log all users.
 console.log("Logging all users.")
@@ -75,7 +77,7 @@ Users.find(function(error, users){
     if(error) return console.error(error);
     console.log(users);
 });
-
+//Delete all users
 Users.deleteMany({}, function(){
     console.log("Finding all users after deletion.")
     Users.find(function(error, users){
@@ -140,6 +142,7 @@ app.get('/users', (req, res) => {
     }
 });
 
+/* Uncomment this to allow deletion of all data.
 //TMP, FOR DEBUG ONLY, REMOVE/COMMENT THIS *****NOT SECURE AT ALL, DELETES ALL SAVED DATA*****
 app.post('/deleteData', (req, res) => {
     console.log("Delete Data");
@@ -148,6 +151,7 @@ app.post('/deleteData', (req, res) => {
         res.status(200).json({message: "Deleted all data."});
     })
 })
+*/
 
 //Save received data into the database.
 app.post('/save', (req, res) => {
@@ -197,6 +201,8 @@ app.post('/save', (req, res) => {
 
 })
 
+//Uncomment this to allow the API to send all the data.
+/*
 //Sends back all the saved data.
 app.get('/getData', (req, res) => {
     console.log("Get Data");
@@ -204,6 +210,7 @@ app.get('/getData', (req, res) => {
         res.status(200).json(data)
     });
 });
+*/
 
 //Register a new user in the database. This part is subject to change because idk who will be able to register people.
 app.post('/register', (req, res) => {

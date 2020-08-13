@@ -13,7 +13,6 @@ $(function(){
             let auth = GetState().token;
             $.ajax({
                 url: 'http://jason-morin.com:4041/register',
-                //url: 'http://localhost:4041/register',    //TODO: Change url when server is hosted somewhere.
                 type: 'post',
                 data: form.serialize(),
                 headers: {

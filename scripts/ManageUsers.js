@@ -90,7 +90,6 @@ function EditStatus(user, currentStatus){
         let auth = GetState().token;
     $.ajax({
         url: 'http://jason-morin.com:4041/editUserStatus',    //TODO: Change url when server is hosted somewhere.
-        //url: 'http://localhost:4041/editUserStatus',    //TODO: Change url when server is hosted somewhere.
         type: 'POST',
         data: payload,
         headers: {
@@ -114,7 +113,6 @@ function DeleteUser(user){
     let auth = GetState().token;
     $.ajax({
         url: 'http://jason-morin.com:4041/deleteUser',    //TODO: Change url when server is hosted somewhere.
-        //url: 'http://localhost:4041/deleteUser',    //TODO: Change url when server is hosted somewhere.
         type: 'POST',
         data: {userName:user},
         headers: {
